@@ -6,7 +6,7 @@ const complaintSchema = new mongoose.Schema({
     category: { type: String, required: true },
     status: { type: String, default: 'Pending' },
     createdAt: { type: Date, default: Date.now },
-    userEmail: { type: String, required: true } // Reference to the user
+    userEmail: { type: String, required: true } 
 });
 
 const Complaint = mongoose.model('Complaint', complaintSchema);

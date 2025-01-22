@@ -17,7 +17,6 @@ const checkAuth = (req, res, next) => {
         return res.status(401).json({ message: "No token provided" });
     }
 
-    // Verify the token
     jwt.verify(token, JWT_PASS, (err, decoded) => {
         if (err) {
             return res.status(401).json({ message: "Invalid or expired token" });
@@ -37,8 +36,6 @@ const signupSchema = z.object({
     email: z.string().email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters long"),
 });
-
-
 
 // SignIn
 app.post("/signin", async function(req, res) {
@@ -92,7 +89,7 @@ app.post("/complaint", checkAuth, async (req, res) => {
             title,
             description,
             category,
-            userEmail: req.user.email  // Link complaint to the user by email for future calls
+            userEmail: req.user.email 
         });
 
         await newComplaint.save();
