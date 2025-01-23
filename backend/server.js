@@ -14,13 +14,13 @@ const JWT_PASS = "123321";
 const checkAuth = (req, res, next) => {
     const token = req.headers.authorization;
     if (!token) {
-        return res.status(401).json({ message: "No token provided" });
+        return res.status(401).json({ msg: "No token provided" });
     }
 
     // Verify the token
     jwt.verify(token, JWT_PASS, (err, decoded) => {
         if (err) {
-            return res.status(401).json({ message: "Invalid or expired token" });
+            return res.status(401).json({ msg: "Invalid or expired token" });
         }
         req.user = decoded;
         next();
@@ -37,8 +37,6 @@ const signupSchema = z.object({
     email: z.string().email("Invalid email address"),
     password: z.string().min(6, "Password must be at least 6 characters long"),
 });
-
-
 
 // SignIn
 app.post("/signin", async function(req, res) {
@@ -66,26 +64,26 @@ app.post("/signup", async (req, res) => {
         // Check exitsing user
         const existingUser = await User.findOne({ email });
         if (existingUser) {
-            return res.status(400).json({ message: 'User already exists' });
+            return res.status(400).json({ msg: 'User already exists' });
         }
 
         // New user
         const newUser = new User({ username, email, password });
         await newUser.save();
 
-        res.status(201).json({ message: 'User registered successfully!' });
+        res.status(201).json({ msg: 'User registered successfully!' });
     } catch (error) {
         if (error instanceof z.ZodError) {
             // Validation error
-            return res.status(400).json({ message: 'Validation error', errors: error.errors });
+            return res.status(400).json({ msg: 'Validation error', errors: error.errors });
         }
         console.error('Error:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ msg: 'Internal server error' });
     }
 });
 
 // Complaint
-app.post("/complaint", checkAuth, async (req, res) => {
+app.post("/complaintSub", async (req, res) => {
     const { title, description, category } = req.body;
     try {
         const newComplaint = new Complaint({
@@ -96,10 +94,10 @@ app.post("/complaint", checkAuth, async (req, res) => {
         });
 
         await newComplaint.save();
-        res.status(201).json({ message: 'Complaint submitted successfully!', complaint: newComplaint });
+        res.status(201).json({ msg: 'Complaint submitted successfully!', complaint: newComplaint });
     } catch (error) {
         console.error('Error:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.status(500).json({ msg: 'Internal server error' });
     }
 });
 
@@ -110,13 +108,29 @@ app.get("/user/complaints", checkAuth, async (req, res) => {
         const complaints = await Complaint.find({ userEmail });
 
         if (complaints.length === 0) {
-            return res.status(404).json({ message: "No complaints found for this user." });
+            return res.status(404).json({ msg: "No complaints found for this user." });
         }
         
-        res.status(200).json({ message: "Complaints retrieved successfully!", complaints });
+        res.status(200).json({ msg: "Complaints retrieved successfully!", complaints });
     } catch (error) {
         console.error("Error fetching complaints:", error);
-        res.status(500).json({ message: "Internal server error" });
+        res.status(500).json({ msg: "Internal server error" });
+    }
+});
+
+// Get all complaints
+app.get("/complaints", async (req, res) => {
+    try {
+        const complaints = await Complaint.find();
+
+        if (complaints.length === 0) {
+            return res.status(404).json({ msg: "No complaints found." });
+        }
+
+        res.status(200).json({ msg: "Complaints retrieved successfully!", complaints });
+    } catch (error) {
+        console.error("Error fetching complaints:", error);
+        res.status(500).json({ msg: "Internal server error" });
     }
 });
 
