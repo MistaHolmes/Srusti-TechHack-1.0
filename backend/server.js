@@ -103,6 +103,23 @@ app.post("/complaint", checkAuth, async (req, res) => {
     }
 });
 
+// Get all user specific complaints
+app.get("/user/complaints", checkAuth, async (req, res) => {
+    try {
+        const userEmail = req.user.email;
+        const complaints = await Complaint.find({ userEmail });
+
+        if (complaints.length === 0) {
+            return res.status(404).json({ message: "No complaints found for this user." });
+        }
+        
+        res.status(200).json({ message: "Complaints retrieved successfully!", complaints });
+    } catch (error) {
+        console.error("Error fetching complaints:", error);
+        res.status(500).json({ message: "Internal server error" });
+    }
+});
+
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
 });
