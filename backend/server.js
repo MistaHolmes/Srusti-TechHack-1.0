@@ -118,6 +118,28 @@ app.get("/user/complaints", checkAuth, async (req, res) => {
     }
 });
 
+//Delete User Specific Complaints
+app.delete("/user/complaints/:id", checkAuth, async (req, res) => {
+    const complaintId = req.params.id;
+
+    try {
+        const deletedComplaint = await Complaint.findOneAndDelete({
+            _id: complaintId,
+            userEmail: req.user.email
+        });
+
+        if (!deletedComplaint) {
+            return res.status(404).json({ msg: "Complaint not found or access denied" });
+        }
+
+        res.status(200).json({ msg: "Complaint deleted successfully!", complaint: deletedComplaint });
+    } catch (error) {
+        console.error("Error deleting complaint:", error);
+        res.status(500).json({ msg: "Internal server error" });
+    }
+});
+
+
 // Get all complaints
 app.get("/complaints", async (req, res) => {
     try {
