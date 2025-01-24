@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const jwt = require('jsonwebtoken');
 const User = require('./db/userSchema');
+const Admin = require('./db/adminSchema');
 const connectDB = require('./db/connections');
 const Complaint = require('./db/complaintSchema');
 const { z } = require('zod');
@@ -152,6 +153,90 @@ app.get("/complaints", async (req, res) => {
         res.status(200).json({ msg: "Complaints retrieved successfully!", complaints });
     } catch (error) {
         console.error("Error fetching complaints:", error);
+        res.status(500).json({ msg: "Internal server error" });
+    }
+});
+
+// // ADMIN // //
+// Admin Authentication
+const checkAdminAuth = (req, res, next) => {
+    const token = req.headers.authorization;
+    if (!token) {
+        return res.status(401).json({ msg: "No token provided" });
+    }
+
+    jwt.verify(token, JWT_PASS, (err, decoded) => {
+        if (err || decoded.role !== 'admin') {
+            return res.status(403).json({ msg: "Access denied" });
+        }
+        req.admin = decoded; 
+        next();
+    });
+};
+
+// Admin Signup
+app.post('/admin/signup', async (req, res) => {
+    const { username, email, password } = req.body;
+
+    try {
+        const existingAdmin = await Admin.findOne({ email });
+        if (existingAdmin) {
+            return res.status(400).json({ msg: 'Admin already exists' });
+        }
+        const newAdmin = new Admin({ username, email, password });
+        await newAdmin.save();
+
+        res.status(201).json({ msg: 'Admin registered successfully!' });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ msg: "Internal server error" });
+    }
+});
+
+// Admin Signin
+app.post('/admin/login', async (req, res) => {
+    const email  = req.body.email;
+    const password = req.body.password;
+    try {
+        const admin = await Admin.findOne({ email });
+        if (!admin || admin.password !== password) {
+            return res.status(400).json({ msg: "Invalid credentials" });
+        }
+        const token = jwt.sign({ email: admin.email, role: 'admin' }, JWT_PASS, { expiresIn: '1h' });
+        res.status(200).json({ msg: 'Welcome, Admin!', token });
+    } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ msg: "Internal server error" });
+    }
+});
+
+// Admin Get all Complaints
+app.get("/admin/complaints", checkAdminAuth, async (req, res) => {
+    try {
+        const complaints = await Complaint.find();
+
+        if (complaints.length === 0) {
+            return res.status(404).json({ msg: "No complaints found." });
+        }
+
+        res.status(200).json({ msg: "Complaints retrieved successfully!", complaints });
+    } catch (error) {
+        console.error("Error fetching complaints:", error);
+        res.status(500).json({ msg: "Internal server error" });
+    }
+});
+
+// Admin Delete Privilage
+app.delete('/admin/complaints/:id', checkAdminAuth, async (req, res) => {
+    const complaintId = req.params.id;
+    try {
+        const deletedComplaint = await Complaint.findByIdAndDelete(complaintId);
+        if (!deletedComplaint) {
+            return res.status(404).json({ msg: "Complaint not found" });
+        }
+        res.status(200).json({ msg: "Complaint deleted successfully!", complaint: deletedComplaint });
+    } catch (error) {
+        console.error("Error deleting complaint:", error);
         res.status(500).json({ msg: "Internal server error" });
     }
 });
