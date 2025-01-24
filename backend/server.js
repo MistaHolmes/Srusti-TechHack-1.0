@@ -194,7 +194,7 @@ app.post('/admin/signup', async (req, res) => {
 });
 
 // Admin Signin
-app.post('/admin/login', async (req, res) => {
+app.post('/admin/signin', async (req, res) => {
     const email  = req.body.email;
     const password = req.body.password;
     try {
