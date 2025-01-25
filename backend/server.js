@@ -113,31 +113,31 @@ const complaintSchema = schemaValidator.object({
     urgencyLevel: schemaValidator.string()
 });
 
-app.post("/complaintSub", checkAuth, upload.array('photos'), async (req, res) => {
-    try {
-      const { title, description, category, address, district, pincode, urgencyLevel, consentForFollowUp } = req.body;
-      const photos = req.files?.map(file => file.path) || [];
+    app.post("/complaintSub", checkAuth, upload.array('photos'), async (req, res) => {
+        try {
+        const { title, description, category, address, district, pincode, urgencyLevel, consentForFollowUp } = req.body;
+        const photos = req.files?.map(file => file.path) || [];
 
-      const newComplaint = new Complaint({
-        title,
-        description,
-        category,
-        address,
-        district,
-        pincode,
-        urgencyLevel,
-        photos,
-        consentForFollowUp,
-        userEmail: req.user.email
-      });
-
-      await newComplaint.save();
-      res.status(201).json({ msg: "Complaint submitted!", complaint: newComplaint });
-    } catch (error) {
-      console.error("Error:", error);
-      res.status(500).json({ msg: "Internal server error" });
-    }
-});
+        const newComplaint = new Complaint({
+            title,
+            description,
+            // category,
+            address,
+            district,
+            pincode,
+            urgencyLevel,
+            photos,
+            consentForFollowUp,
+            userEmail: req.user.email
+        });
+        
+        await newComplaint.save();
+        res.status(201).json({ msg: "Complaint submitted!", complaint: newComplaint });
+        } catch (error) {
+        console.error("Error:", error);
+        res.status(500).json({ msg: "Internal server error" });
+        }
+    });
 
 // Get all user specific complaints
 app.get("/user/complaints", checkAuth, async (req, res) => {
@@ -198,16 +198,21 @@ app.get("/complaints", async (req, res) => {
 // Upvote complaint
 app.put("/complaints/:id/upvote", checkAuth, async (req, res) => {
     try {
-      const complaint = await Complaint.findByIdAndUpdate(
-        req.params.id,
-        { $inc: { upvotes: 1 } },
-        { new: true }
-      );
-      
+      const complaintId = req.params.id;
+      const userEmail = req.user.email;
+      const complaint = await Complaint.findById(complaintId);
+  
       if (!complaint) {
         return res.status(404).json({ msg: "Complaint not found" });
       }
-      
+      // Check if the user has already upvoted
+      if (complaint.upvotedBy.includes(userEmail)) {
+        return res.status(400).json({ msg: "You have already upvoted this complaint" });
+      }
+      complaint.upvotedBy.push(userEmail);
+      complaint.upvotes += 1;
+      await complaint.save();
+  
       res.status(200).json(complaint);
     } catch (error) {
       console.error("Error upvoting:", error);
