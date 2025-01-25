@@ -1,0 +1,67 @@
+/* Testimonials section */
+.testimonials-section {
+    background-color: #f9f9f9; /* Light background */
+    padding: 4rem 2rem; /* Top/bottom and left/right padding */
+    text-align: center;
+  }
+  
+  /* Title styling */
+  .testimonials-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  /* Subtitle styling */
+  .testimonials-subtitle {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: #666;
+  }
+  
+  /* Grid layout for testimonials */
+  .testimonials-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); /* Responsive grid */
+    gap: 2rem; /* Space between cards */
+    max-width: 1200px; /* Limit grid width */
+    margin: 0 auto; /* Center the grid */
+  }
+  
+  /* Testimonial card styling */
+  .testimonial-card {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px; /* Rounded corners */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Subtle shadow */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .testimonial-card:hover {
+    transform: translateY(-5px); /* Lift effect on hover */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Stronger shadow on hover */
+  }
+  
+  /* Testimonial feedback text */
+  .testimonial-feedback {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+  }
+  
+  /* User info styling */
+  .testimonial-user {
+    text-align: left;
+  }
+  
+  .testimonial-name {
+    font-size: 1.2rem;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+  
+  .testimonial-role {
+    font-size: 1rem;
+    color: #777;
+  }

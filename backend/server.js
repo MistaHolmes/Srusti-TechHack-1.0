@@ -113,31 +113,31 @@ const complaintSchema = schemaValidator.object({
     urgencyLevel: schemaValidator.string()
 });
 
-    app.post("/complaintSub", checkAuth, upload.array('photos'), async (req, res) => {
-        try {
-        const { title, description, category, address, district, pincode, urgencyLevel, consentForFollowUp } = req.body;
-        const photos = req.files?.map(file => file.path) || [];
+app.post("/complaintSub", checkAuth, upload.array('photos'), async (req, res) => {
+    try {
+      const { title, description, category, address, district, pincode, urgencyLevel, consentForFollowUp } = req.body;
+      const photos = req.files?.map(file => file.path) || [];
 
-        const newComplaint = new Complaint({
-            title,
-            description,
-            // category,
-            address,
-            district,
-            pincode,
-            urgencyLevel,
-            photos,
-            consentForFollowUp,
-            userEmail: req.user.email
-        });
-        
-        await newComplaint.save();
-        res.status(201).json({ msg: "Complaint submitted!", complaint: newComplaint });
-        } catch (error) {
-        console.error("Error:", error);
-        res.status(500).json({ msg: "Internal server error" });
-        }
-    });
+      const newComplaint = new Complaint({
+        title,  
+        description,
+        // category,
+        address,
+        district,
+        pincode,
+        urgencyLevel,
+        photos,
+        consentForFollowUp,
+        userEmail: req.user.email
+      });
+
+      await newComplaint.save();
+      res.status(201).json({ msg: "Complaint submitted!", complaint: newComplaint });
+    } catch (error) {
+      console.error("Error:", error);
+      res.status(500).json({ msg: "Internal server error" });
+    }
+});
 
 // Get all user specific complaints
 app.get("/user/complaints", checkAuth, async (req, res) => {

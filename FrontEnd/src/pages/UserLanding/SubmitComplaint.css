@@ -1,0 +1,141 @@
+.submit-complaint-container {
+  max-width: 600px;
+  margin: 20px auto;
+  padding: 20px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  background-color: #f9f9f9;
+}
+
+.step-progress {
+  margin-bottom: 20px;
+}
+
+.step-indicator {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #0f538d;
+  margin-bottom: 10px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 10px;
+  background-color: #e0e0e0;
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background-color: #0f538d;
+  transition: width 0.3s ease;
+}
+
+.form-step {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.form-group {
+  margin-bottom: 15px;
+  text-align: left;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 5px;
+  font-weight: bold;
+  color: #555;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 1rem;
+  transition: border-color 0.3s ease;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+  border-color: #0f538d;
+  outline: none;
+}
+
+.form-group textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.form-group input[type="file"] {
+  padding: 5px;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.next-button,
+.back-button,
+.submit-button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.next-button {
+  background-color: #0f538d;
+  color: white;
+}
+
+.next-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.back-button {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.submit-button {
+  background-color: #28a745;
+  color: white;
+}
+
+.next-button:hover:not(:disabled),
+.back-button:hover,
+.submit-button:hover {
+  transform: translateY(-2px);
+}
+
+.error-message {
+  color: red;
+  margin-bottom: 15px;
+}

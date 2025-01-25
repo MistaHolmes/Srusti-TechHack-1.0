@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// complaintSchema.js
 const complaintSchema = new mongoose.Schema({
   title: { type: String, required: true },
   description: { type: String, required: true },
@@ -11,7 +12,7 @@ const complaintSchema = new mongoose.Schema({
   consentForFollowUp: { type: Boolean, required: true },
   userEmail: { type: String, required: true },
   upvotedBy: { type: [String], default: [] },
-  upvotes: { type: Number, default: 0 },
+  upvotes: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now }
 });
 

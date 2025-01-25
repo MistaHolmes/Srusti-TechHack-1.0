@@ -1,0 +1,110 @@
+.dashboard-container {
+  max-width: 1200px;
+  margin: 20px auto;
+  padding: 0 20px;
+  text-align: center; /* Center the heading and buttons */
+}
+
+.dashboard-header {
+  display: flex;
+  justify-content: center; /* Center the buttons */
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.dashboard-heading {
+  margin-top: 20px; /* Add space between buttons and heading */
+}
+
+.register-complaint-btn {
+  background-color: #0f538d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.register-complaint-btn:hover {
+  background-color: #0056b3;
+}
+
+.complaints-list {
+  display: grid;
+  gap: 20px;
+}
+
+.complaint-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.complaint-content {
+  flex: 1;
+}
+
+.complaint-content h3 {
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.complaint-meta {
+  display: flex;
+  gap: 15px;
+  margin-top: 10px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.upvote-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+}
+
+.upvote-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #0f538d;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.upvote-btn:hover {
+  background-color: #f0f0f0;
+}
+
+.upvote-count {
+  font-weight: bold;
+  color: #333;
+}
+
+.dashboard-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center; /* Center the buttons */
+}
+
+.sort-button {
+  background-color: #0f538d;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.sort-button:hover {
+  background-color: #0056b3;
+}

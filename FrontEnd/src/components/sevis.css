@@ -1,0 +1,71 @@
+/* Full-width section */
+.register-section {
+    background: linear-gradient(135deg, #093960, #0f7fe0); /* Gradient background */
+    padding: 4rem 2rem; /* Top/bottom and left/right padding */
+    color: white;
+    text-align: center;
+    width: 100%; /* Full width */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2); /* Subtle shadow */
+  }
+  
+  /* Container for content */
+  .register-content {
+    max-width: 1200px; /* Limit content width */
+    margin: 0 auto; /* Center the content */
+  }
+  
+  /* Title styling */
+  .register-title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    font-weight: bold;
+    color: white;
+  }
+  
+  /* Description text */
+  .register-description {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+  }
+  
+  /* Button container */
+  .register-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem; /* Space between buttons */
+  }
+  
+  /* Base button styling */
+  .register-button {
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 30px; /* Rounded buttons */
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  /* Login button */
+  .login-button {
+    background-color: #ffffff; /* White background */
+    color: #2575fc; /* Blue text */
+  }
+  
+  .login-button:hover {
+    background-color: #f0f0f0; /* Light gray on hover */
+    transform: translateY(-2px); /* Slight lift */
+  }
+  
+  /* Sign Up button */
+  .main-signup-button{
+    background-color: transparent; /* Transparent background */
+    border: 2px solid white; /* White border */
+    color: white; /* White text */
+  }
+  
+  .main-signup-button:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent white on hover */
+    transform: translateY(-2px); /* Slight lift */
+  }
