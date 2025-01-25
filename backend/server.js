@@ -5,28 +5,38 @@ const User = require('./db/userSchema');
 const Admin = require('./db/adminSchema');
 const connectDB = require('./db/connections');
 const Complaint = require('./db/complaintSchema');
+const cors = require('cors'); 
 const { z } = require('zod');
-const PORT = 3000;
+require('dotenv').config();
+
 const app = express();
 app.use(express.json());
+app.use(cors());
 connectDB();
-const JWT_PASS = "123321";
+
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).json({ msg: 'Something went wrong!' });
+});
+
+const JWT_PASS = process.env.JWT_SECRET; // Use JWT secret from .env
+const PORT = process.env.PORT || 3000; 
 
 const checkAuth = (req, res, next) => {
-    const token = req.headers.authorization;
+    const token = req.headers.authorization?.split(" ")[1]; // Get token after "Bearer"
+    
     if (!token) {
-        return res.status(401).json({ msg: "No token provided" });
+      return res.status(401).json({ msg: "No token provided" });
     }
-
-    // Verify the token
-    jwt.verify(token, JWT_PASS, (err, decoded) => {
-        if (err) {
-            return res.status(401).json({ msg: "Invalid or expired token" });
-        }
-        req.user = decoded;
-        next();
+  
+    jwt.verify(token, process.env.JWT_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(401).json({ msg: "Invalid or expired token" });
+      }
+      req.user = decoded; // Attach decoded user data to request
+      next();
     });
-};
+  };
 
 // Landing
 app.get("/", (req, res) => {
@@ -46,8 +56,12 @@ app.post("/signin", async function(req, res) {
     const existingUser = await User.findOne({ email: email });
 
     if (existingUser && existingUser.password === password) {
-        // Generate JWT token
-        const token = jwt.sign({ email: existingUser.email, name: existingUser.name }, JWT_PASS,{ expiresIn: '1h' });
+        // Corrected to use username
+        const token = jwt.sign(
+          { email: existingUser.email, username: existingUser.username }, 
+          JWT_PASS,
+          { expiresIn: '1h' }
+        );
         return res.status(200).json({ msg: "Welcome back!", token: token });
     } else {
         return res.status(400).send("Invalid credentials");
@@ -83,22 +97,45 @@ app.post("/signup", async (req, res) => {
     }
 });
 
-// Complaint
-app.post("/complaintSub", async (req, res) => {
-    const { title, description, category } = req.body;
-    try {
-        const newComplaint = new Complaint({
-            title,
-            description,
-            category,
-            userEmail: req.user.email  // Link complaint to the user by email for future calls
-        });
 
-        await newComplaint.save();
-        res.status(201).json({ msg: 'Complaint submitted successfully!', complaint: newComplaint });
+const multer = require('multer');
+const upload = multer({ dest: 'uploads/' });
+
+const { z: schemaValidator } = require('zod'); 
+
+const complaintSchema = schemaValidator.object({
+    title: schemaValidator.string().min(3),
+    description: schemaValidator.string().min(10),
+    category: schemaValidator.string().min(3),
+    address: schemaValidator.string().min(5),
+    district: schemaValidator.string().min(3),
+    pincode: schemaValidator.string().min(6),
+    urgencyLevel: schemaValidator.string()
+});
+
+app.post("/complaintSub", checkAuth, upload.array('photos'), async (req, res) => {
+    try {
+      const { title, description, category, address, district, pincode, urgencyLevel, consentForFollowUp } = req.body;
+      const photos = req.files?.map(file => file.path) || [];
+
+      const newComplaint = new Complaint({
+        title,
+        description,
+        category,
+        address,
+        district,
+        pincode,
+        urgencyLevel,
+        photos,
+        consentForFollowUp,
+        userEmail: req.user.email
+      });
+
+      await newComplaint.save();
+      res.status(201).json({ msg: "Complaint submitted!", complaint: newComplaint });
     } catch (error) {
-        console.error('Error:', error);
-        res.status(500).json({ msg: 'Internal server error' });
+      console.error("Error:", error);
+      res.status(500).json({ msg: "Internal server error" });
     }
 });
 
@@ -156,6 +193,27 @@ app.get("/complaints", async (req, res) => {
         res.status(500).json({ msg: "Internal server error" });
     }
 });
+
+
+// Upvote complaint
+app.put("/complaints/:id/upvote", checkAuth, async (req, res) => {
+    try {
+      const complaint = await Complaint.findByIdAndUpdate(
+        req.params.id,
+        { $inc: { upvotes: 1 } },
+        { new: true }
+      );
+      
+      if (!complaint) {
+        return res.status(404).json({ msg: "Complaint not found" });
+      }
+      
+      res.status(200).json(complaint);
+    } catch (error) {
+      console.error("Error upvoting:", error);
+      res.status(500).json({ msg: "Internal server error" });
+    }
+  });
 
 // // ADMIN // //
 // Admin Authentication
