@@ -304,6 +304,45 @@ app.delete('/admin/complaints/:id', checkAdminAuth, async (req, res) => {
     }
 });
 
+// Sync Offline Complaints
+app.post('/complaints/sync', async (req, res) => {
+    const complaints = req.body.complaints;
+    if (!Array.isArray(complaints) || complaints.length === 0) {
+        return res.status(400).json({ msg: "No complaints provided for sync." });
+    }
+    try {
+        const insertedComplaints = [];
+        for (const complaint of complaints) {
+            const { title, description, category, userEmail, address, panchayat, district, pincode, urgencyLevel, consentForFollowUp } = complaint;
+            // if (!district || !pincode || !urgencyLevel || consentForFollowUp === undefined) {
+            //     return res.status(400).json({ msg: "Missing required fields: district, pincode, urgencyLevel, or consentForFollowUp" });
+            // }
+            const newComplaint = new Complaint({
+                title,
+                description,
+                category,
+                userEmail,
+                address,
+                panchayat,
+                district,
+                pincode,
+                urgencyLevel,
+                consentForFollowUp,
+            });
+            const savedComplaint = await newComplaint.save();
+            insertedComplaints.push(savedComplaint);
+        }
+        res.status(201).json({
+            msg: "Complaints synced successfully!",
+            syncedComplaints: insertedComplaints,
+        });
+    } catch (error) {
+        console.error("Error syncing complaints:", error);
+        res.status(500).json({ msg: "Internal server error" });
+    }
+});
+
+
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
 });
