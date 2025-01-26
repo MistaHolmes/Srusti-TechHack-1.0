@@ -8,6 +8,8 @@ const Complaint = require('./db/complaintSchema');
 const cors = require('cors'); 
 const { z } = require('zod');
 require('dotenv').config();
+const sendEmail = require("./emailservices");
+
 
 const app = express();
 app.use(express.json());
@@ -342,6 +344,36 @@ app.post('/complaints/sync', async (req, res) => {
     }
 });
 
+// Send Mail
+app.put("/complaints/:id/status", async (req, res) => {
+    const complaintId = req.params.id;
+    const { status } = req.body;
+    // Validate the status field
+    if (!status) {
+        return res.status(400).json({ msg: "Status field is required." });
+    }
+    try {
+        const complaint = await Complaint.findById(complaintId);
+        if (!complaint) {
+            return res.status(404).json({ msg: "Complaint not found." });
+        }
+
+        // Update the complaint status
+        complaint.status = status;
+        await complaint.save();
+
+        // Send email notification if status is "completed"
+        if (status.toLowerCase() === "completed") {
+            const emailText = `Hello,\n\nYour complaint titled "${complaint.title}" has been marked as "completed".\n\nThank you for using our service!`;
+            await sendEmail(complaint.userEmail, "Complaint Status Updated", emailText);
+        }
+
+        res.status(200).json({ msg: "Complaint status updated successfully!" });
+    } catch (error) {
+        console.error("Error updating complaint status:", error);
+        res.status(500).json({ msg: "Internal server error." });
+    }
+});
 
 app.listen(PORT, () => {
     console.log(`Server is running on ${PORT}`);
