@@ -13,7 +13,8 @@ const complaintSchema = new mongoose.Schema({
   userEmail: { type: String, required: true },
   upvotedBy: { type: [String], default: [] },
   upvotes: { type: Number, default: 0 },
-  createdAt: { type: Date, default: Date.now }
+  createdAt: { type: Date, default: Date.now },
+  status: { type: String, enum: ["pending", "in-progress", "completed"], default: "pending" }
 });
 
 const Complaint = mongoose.model("Complaint", complaintSchema);
