@@ -9,7 +9,7 @@ const cors = require('cors');
 const { z } = require('zod');
 require('dotenv').config();
 const sendEmail = require("./emailservices");
-
+const stat = require('lodash');
 
 const app = express();
 app.use(express.json());
@@ -340,6 +340,26 @@ app.post('/complaints/sync', async (req, res) => {
         });
     } catch (error) {
         console.error("Error syncing complaints:", error);
+        res.status(500).json({ msg: "Internal server error" });
+    }
+});
+
+//Statistics 
+app.get("/admin/complaints/statistics", async (req, res) => {
+    try {
+        const complaints = await Complaint.find();
+        if (complaints.length === 0) {
+            return res.status(404).json({ msg: "No complaints found." });
+        }
+        const groupedComplaints = stat.groupBy(complaints, 'district');
+        const statistics = stat.map(groupedComplaints, (complaints, district) => ({
+            district,
+            count: complaints.length
+        }));
+        const sortedStatistics = stat.orderBy(statistics, 'count', 'desc');
+        res.status(200).json({ msg: "Statistics retrieved successfully!", statistics: sortedStatistics });
+    } catch (error) {
+        console.error("Error fetching statistics:", error);
         res.status(500).json({ msg: "Internal server error" });
     }
 });
